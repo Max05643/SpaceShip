@@ -22,6 +22,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     Camera mainCamera;
 
+    [SerializeField]
+    Transform cameraSystem;
+
     Rigidbody rigidbodyComponent;
 
     Quaternion currentRotation;
@@ -68,6 +71,8 @@ public class PlayerController : MonoBehaviour
                RuntimeUtilities.DestroyVolume(m_Volume, true, true);
            });
 
+        cameraSystem.DOKill(true);
+        cameraSystem.DOShakeRotation(0.5f, 10, 90, 90, true);
     }
 
     void ProcessInput()

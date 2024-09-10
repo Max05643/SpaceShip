@@ -11057,6 +11057,7 @@ MonoBehaviour:
   minFov: 50
   maxFov: 80
   mainCamera: {fileID: 963194227}
+  cameraSystem: {fileID: 876491149}
 --- !u!1 &2032333315
 GameObject:
   m_ObjectHideFlags: 0
