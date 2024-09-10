@@ -78,7 +78,7 @@ public class AsteroidsController : MonoBehaviour
         }
         else
         {
-            GameObject asteroid = Instantiate(asteroidPrefab);
+            GameObject asteroid = Instantiate(asteroidPrefab, parent: transform);
             return asteroid;
         }
     }
