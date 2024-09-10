@@ -80,7 +80,7 @@ public class PlayerController : MonoBehaviour
 
 
 
-        playerModelObject.rotation = currentRotation;
+        playerModelObject.rotation = Quaternion.Euler(currentRotation.eulerAngles.x, 0, -currentRotation.eulerAngles.y);
 
         var targetDirection = currentRotation * Vector3.forward;
 

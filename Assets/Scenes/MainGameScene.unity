@@ -6014,8 +6014,8 @@ MonoBehaviour:
   borderMaterial: {fileID: 2100000, guid: 1013f62b0143d214e85ea3a92e54bb3d, type: 2}
   playerObject: {fileID: 1984338609}
   bordersSystemObject: {fileID: 1033960074}
-  radiusToDisplay: 25
-  maxRadiusToDisplay: 50
+  radiusToDisplay: 10
+  maxRadiusToDisplay: 30
 --- !u!1 &1753731771
 GameObject:
   m_ObjectHideFlags: 0
