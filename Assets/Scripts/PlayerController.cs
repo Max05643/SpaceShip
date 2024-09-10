@@ -98,8 +98,8 @@ public class PlayerController : MonoBehaviour
 
     void ApplyFovEffect()
     {
-        var velocity = rigidbodyComponent.velocity.magnitude;
-        var t = Mathf.InverseLerp(0, maxSpeed, velocity);
+        var velocity = rigidbodyComponent.velocity.z;
+        var t = Mathf.Clamp01(Mathf.InverseLerp(0, maxSpeed, velocity));
         mainCamera.fieldOfView = Mathf.Lerp(minFov, maxFov, t);
     }
 
