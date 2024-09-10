@@ -5862,6 +5862,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerTransform: {fileID: 1984338609}
   distanceFromPlayer: 500
+  rotationTime: 120
 --- !u!1 &1354477028
 GameObject:
   m_ObjectHideFlags: 0
@@ -10962,6 +10963,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1984338609}
   - component: {fileID: 1984338606}
+  - component: {fileID: 1984338612}
   - component: {fileID: 1984338610}
   - component: {fileID: 1984338611}
   m_Layer: 0
@@ -10990,8 +10992,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.4, y: 1.03, z: 2.69}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.51, y: 0.98, z: 2.95}
+  m_Center: {x: 0, y: 0.12, z: 0.16}
 --- !u!4 &1984338609
 Transform:
   m_ObjectHideFlags: 0
@@ -11058,6 +11060,27 @@ MonoBehaviour:
   maxFov: 80
   mainCamera: {fileID: 963194227}
   cameraSystem: {fileID: 876491149}
+--- !u!65 &1984338612
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1984338605}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.79, y: 0.21, z: 0.55}
+  m_Center: {x: 0, y: 0, z: -0.72}
 --- !u!1 &2032333315
 GameObject:
   m_ObjectHideFlags: 0
