@@ -3,6 +3,7 @@ Shader "Unlit/WireframeShader"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+        _Color ("Color", Color) = (1,1,1,1)
     }
     SubShader
     {
@@ -40,6 +41,7 @@ Shader "Unlit/WireframeShader"
             float4 _PlayerPos;
             float _RadiusToDisplay;
             float _MaxRadiusToDisplay;
+            float4 _Color;
 
             v2f vert (appdata v)
             {
@@ -60,6 +62,7 @@ Shader "Unlit/WireframeShader"
 
                 float distNormalized = clamp((dist - _RadiusToDisplay) / (_MaxRadiusToDisplay - _RadiusToDisplay), 0, 1);
                 
+                col.rgb *= _Color.rgb;
                 col.a *= (1 - distNormalized);
 
                 return col;
