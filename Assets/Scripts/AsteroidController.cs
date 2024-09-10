@@ -9,10 +9,12 @@ public class AsteroidController : MonoBehaviour
     GameObject[] possibleMeshes;
 
 
-    Sequence currentAnimation = null;
+    Tween currentAnimation = null;
 
     void OnEnable()
     {
+        transform.rotation = Random.rotation;
+
         int meshToDisplay = Random.Range(0, possibleMeshes.Length);
         for (int i = 0; i < possibleMeshes.Length; i++)
         {
@@ -21,11 +23,9 @@ public class AsteroidController : MonoBehaviour
 
         currentAnimation?.Kill();
 
-        currentAnimation = DOTween.Sequence();
-        var rotationTarget = Random.insideUnitSphere * 360;
-        currentAnimation.Append(possibleMeshes[meshToDisplay].transform.DOLocalRotate(rotationTarget, 2f).SetEase(Ease.Linear).From(Vector3.zero));
-        currentAnimation.Append(possibleMeshes[meshToDisplay].transform.DOLocalRotate(Vector3.zero, 2f).SetEase(Ease.Linear).From(rotationTarget));
-        currentAnimation.SetLoops(-1, LoopType.Restart);
+        var rotationTime = Random.Range(1f, 5f);
+
+        currentAnimation = possibleMeshes[meshToDisplay].transform.DORotate(Vector2.up * 180, rotationTime).SetLoops(-1, LoopType.Incremental).SetEase(Ease.Linear);
     }
 
 
