@@ -48,6 +48,8 @@ public class PlayerController : MonoBehaviour
         m_Vignette = ScriptableObject.CreateInstance<Vignette>();
         m_Vignette.enabled.Override(true);
         m_Vignette.intensity.Override(1f);
+        m_Vignette.smoothness.Override(1f);
+        m_Vignette.roundness.Override(1f);
         m_Vignette.color.Override(Color.red);
 
 
