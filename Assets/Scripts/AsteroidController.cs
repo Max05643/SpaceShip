@@ -4,6 +4,9 @@ using DG.Tweening;
 using UnityEngine;
 using Zenject;
 
+/// <summary>
+/// Controls the asteroid
+/// </summary>
 public class AsteroidController : MonoBehaviour
 {
 

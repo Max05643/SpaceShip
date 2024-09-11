@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
+/// <summary>
+/// Controller for displaying borders and visual effects associated with them
+/// </summary>
 public class BordersController : MonoBehaviour
 {
-
-
     [System.Serializable]
     public class Settings
     {

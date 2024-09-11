@@ -45,7 +45,11 @@ MonoBehaviour:
       initialSpawnDistance: 0
       minSpawnDistance: 0
       maxSpawnDistance: 0
+      maxSpawnZ: 1900
       targetCount: 0
+    goldDetectorSettings:
+      detectionRadius: 15
+      tolerationDistance: 10
   - playerSettings:
       maxSpeed: 10
       acceleration: 5
@@ -78,4 +82,8 @@ MonoBehaviour:
       initialSpawnDistance: 100
       minSpawnDistance: 300
       maxSpawnDistance: 1000
+      maxSpawnZ: 1900
       targetCount: 300
+    goldDetectorSettings:
+      detectionRadius: 15
+      tolerationDistance: 10

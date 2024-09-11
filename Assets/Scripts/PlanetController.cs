@@ -5,6 +5,10 @@ using DG.Tweening;
 using UnityEngine;
 using Zenject;
 
+
+/// <summary>
+/// Controls visual effects of the planet
+/// </summary>
 public class PlanetController : MonoBehaviour
 {
 
@@ -24,6 +28,9 @@ public class PlanetController : MonoBehaviour
 
     bool isMoving = true;
 
+    /// <summary>
+    /// Planet movement is disabled, i.e. it does not follow the player anymore
+    /// </summary>
     public void DisableMovement()
     {
         isMoving = false;
@@ -33,6 +40,7 @@ public class PlanetController : MonoBehaviour
     {
         currentAnimation = transform.DORotate(Vector2.up * 180, settings.rotationTime).SetLoops(-1, LoopType.Incremental).SetEase(Ease.Linear);
     }
+
     void Update()
     {
         if (!isMoving)

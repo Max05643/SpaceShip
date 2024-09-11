@@ -4,6 +4,11 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
+
+
+/// <summary>
+/// Controls the "pipe" which is used to grab gold items
+/// </summary>
 public class PipeController : MonoBehaviour
 {
     [SerializeField]
@@ -18,6 +23,9 @@ public class PipeController : MonoBehaviour
 
     public bool IsAnimating => currentAnimation != null;
 
+    /// <summary>
+    /// Starts the animation of grabbing the item. Invokes onComplete when the animation is finished
+    /// </summary>
     public void GrabItem(GameObject item, Action onComplete)
     {
         var oldItemPos = item.transform.position;

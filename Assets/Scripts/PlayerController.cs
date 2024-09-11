@@ -5,9 +5,13 @@ using UnityEngine.Rendering.PostProcessing;
 using DG.Tweening;
 using Zenject;
 using UnityEngine.SceneManagement;
+
+
+/// <summary>
+/// Controls input from the player and ship's movement
+/// </summary>
 public class PlayerController : MonoBehaviour
 {
-
     enum GameOverType
     {
         Victory,
@@ -21,6 +25,15 @@ public class PlayerController : MonoBehaviour
         Playing,
         GameOver
     }
+
+    readonly Dictionary<GameOverType, string> gameOverMessages = new Dictionary<GameOverType, string>
+    {
+        { GameOverType.Victory, "You Win!" },
+        { GameOverType.Health, "You lose after the fatal collision!" },
+        { GameOverType.Barrier, "You lose after crossing the simulation's broders!" }
+    };
+
+
 
     [System.Serializable]
     public class Settings
@@ -138,13 +151,6 @@ public class PlayerController : MonoBehaviour
         if (transform.position.z >= settings.distanceToWin)
             EndGame(GameOverType.Victory);
     }
-
-    readonly Dictionary<GameOverType, string> gameOverMessages = new Dictionary<GameOverType, string>
-    {
-        { GameOverType.Victory, "You Win!" },
-        { GameOverType.Health, "You lose after the fatal collision!" },
-        { GameOverType.Barrier, "You lose after crossing the simulation's broders!" }
-    };
 
     void EndGame(GameOverType settedGameOverType)
     {

@@ -4,6 +4,9 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 
+/// <summary>
+/// Controls the cameras' system
+/// </summary>
 public class CameraController : MonoBehaviour
 {
     [SerializeField]
@@ -21,12 +24,17 @@ public class CameraController : MonoBehaviour
     }
     Sequence currentAnimation = null;
 
-
+    /// <summary>
+    /// Camera will no longer follow the player
+    /// </summary>
     public void FreezeCameraPosition()
     {
         transform.SetParent(null);
     }
 
+    /// <summary>
+    /// Plays damage animation
+    /// </summary>
     public void ApplyDamageAnimation()
     {
         PostProcessVolume m_Volume;

@@ -5,6 +5,9 @@ using UnityEngine;
 using UnityEngine.AI;
 using Zenject;
 
+/// <summary>
+/// Controls the asteroids
+/// </summary>
 public class AsteroidsController : MonoBehaviour
 {
     [System.Serializable]

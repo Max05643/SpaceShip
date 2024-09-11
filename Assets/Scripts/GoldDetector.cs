@@ -5,13 +5,22 @@ using System.Linq;
 using UnityEngine;
 using Zenject;
 
+
+/// <summary>
+/// Controller for detecting gold items and grabbing them
+/// </summary>
 public class GoldDetector : MonoBehaviour
 {
-    [SerializeField]
-    float detectionRadius = 1f;
 
-    [SerializeField]
-    float tolerationDistance = 10;
+    [Serializable]
+    public class Settings
+    {
+        public float detectionRadius = 1f;
+        public float tolerationDistance = 10;
+    }
+
+    [Inject]
+    Settings settings;
 
     [Inject]
     PipeController pipeController;
@@ -24,6 +33,10 @@ public class GoldDetector : MonoBehaviour
 
     GameObject targetGold = null;
 
+
+    /// <summary>
+    /// Starts the animation of grabbing the nearest gold if it is possible
+    /// </summary>
     public void GrabNearestGold(Action onSuccessfulGrab)
     {
         if (targetGold == null || pipeController.IsAnimating)
@@ -42,12 +55,16 @@ public class GoldDetector : MonoBehaviour
         });
     }
 
+
+    /// <summary>
+    /// Returns the possible gold items that can be grabbed
+    /// </summary>
     IEnumerable<GameObject> GetPossibleGolds()
     {
         return goldSpawnController.CurrentGolds.
         Where(
-            g => Vector3.Distance(player.position, g.transform.position) < detectionRadius
-            && g.transform.position.z > player.position.z + tolerationDistance
+            g => Vector3.Distance(player.position, g.transform.position) < settings.detectionRadius
+            && g.transform.position.z > player.position.z + settings.tolerationDistance
             && !g.GetComponent<GoldController>().IsBeingGrabbed
             );
     }
@@ -57,6 +74,9 @@ public class GoldDetector : MonoBehaviour
         UpdateDetected();
     }
 
+    /// <summary>
+    /// Updates the detected gold items' visual effects
+    /// </summary>
     void UpdateDetected()
     {
         targetGold?.GetComponent<GoldController>().StopDetecting();

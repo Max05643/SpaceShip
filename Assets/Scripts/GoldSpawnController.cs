@@ -4,6 +4,9 @@ using System.Linq.Expressions;
 using UnityEngine;
 using Zenject;
 
+/// <summary>
+/// Controller for spawning gold items
+/// </summary>
 public class GoldSpawnController : MonoBehaviour
 {
 
@@ -112,6 +115,9 @@ public class GoldSpawnController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Removes specified gold item
+    /// </summary>
     public void RemoveGold(GameObject gold)
     {
         currentgolds.Remove(gold);

@@ -16,6 +16,8 @@ public class SettingsInstaller : ScriptableObjectInstaller<SettingsInstaller>
         public AsteroidsController.Settings asteroidsSettings;
 
         public GoldSpawnController.Settings goldSpawnSettings;
+
+        public GoldDetector.Settings goldDetectorSettings;
     }
 
     [SerializeField]
@@ -40,5 +42,6 @@ public class SettingsInstaller : ScriptableObjectInstaller<SettingsInstaller>
         Container.BindInstance(sceneSettings.bordersSettings);
         Container.BindInstance(sceneSettings.asteroidsSettings);
         Container.BindInstance(sceneSettings.goldSpawnSettings);
+        Container.BindInstance(sceneSettings.goldDetectorSettings);
     }
 }
