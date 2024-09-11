@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     public class Settings
     {
         public float maxSpeed = 5, acceleration = 1, rotationSpeed = 0.5f, speedAfterTheCollision = 10;
+        public int initialHealth = 100, damageFromAsteroid = 10;
     }
 
     [Inject]
@@ -31,12 +32,18 @@ public class PlayerController : MonoBehaviour
     [Inject]
     InputController inputController;
 
+    [Inject]
+    UIController uiController;
+
     Rigidbody rigidbodyComponent;
 
     Quaternion currentRotation;
 
+    int currentHealth = 0;
+
     void Awake()
     {
+        currentHealth = settings.initialHealth;
         rigidbodyComponent = GetComponent<Rigidbody>();
     }
 
@@ -45,10 +52,26 @@ public class PlayerController : MonoBehaviour
         ProcessPhysics();
         ProcessGrabInput();
         ApplyFovEffect();
+        RepaintUI();
+
+    }
+
+    void RepaintUI()
+    {
+        uiController.UpdateHealth((float)currentHealth / settings.initialHealth);
+        var t = Mathf.Clamp01(Mathf.InverseLerp(0, settings.maxSpeed, rigidbodyComponent.velocity.z));
+        uiController.UpdateSpeed(t);
     }
 
     void OnCollisionEnter(Collision collision)
     {
+        if (collision.gameObject.CompareTag("Asteroid"))
+            ProcessAsteroidCollision();
+    }
+
+    void ProcessAsteroidCollision()
+    {
+        currentHealth -= settings.damageFromAsteroid;
         rigidbodyComponent.velocity = -Vector3.forward * settings.speedAfterTheCollision;
         cameraController.ApplyDamageAnimation();
     }
