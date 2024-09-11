@@ -16,7 +16,11 @@ MonoBehaviour:
     maxSpeed: 50
     acceleration: 25
     rotationSpeed: 50
-    speedAfterTheCollision: 10
+    speedAfterTheCollision: 50
+    initialHealth: 100
+    damageFromAsteroid: 10
+    distanceToWin: 2000
+    displayCollectedCoins: 1
   planetSettings:
     minDistanceFromPlayer: 500
     maxDistanceFromPlayer: 1000
@@ -32,6 +36,7 @@ MonoBehaviour:
     initialSpawnDistance: 50
     minSpawnDistance: 300
     maxSpawnDistance: 1000
+    maxSpawnZ: 1900
     targetCount: 3000
   goldSpawnSettings:
     enabled: 0
