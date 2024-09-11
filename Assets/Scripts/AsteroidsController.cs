@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using Zenject;
 
 public class AsteroidsController : MonoBehaviour
@@ -12,7 +13,7 @@ public class AsteroidsController : MonoBehaviour
     {
         public bool enabled = true;
 
-        public float spawnNoise = 50, initialSpawnDistance = 50, minSpawnDistance = 300, maxSpawnDistance = 1000;
+        public float spawnNoise = 50, initialSpawnDistance = 50, minSpawnDistance = 300, maxSpawnDistance = 1000, maxSpawnZ = 1900;
 
         public int targetCount = 1000;
     }
@@ -70,9 +71,18 @@ public class AsteroidsController : MonoBehaviour
 
     void SpawnNewAsteroids(float minSpawnDistance)
     {
-        while (currentAsteroids.Count < settings.targetCount)
+        int skippedCount = 0;
+
+        while (currentAsteroids.Count + skippedCount < settings.targetCount)
         {
             Vector3 spawnPosition = new Vector3(Random.Range(-settings.spawnNoise, settings.spawnNoise), Random.Range(-settings.spawnNoise, settings.spawnNoise), Random.Range(minSpawnDistance, settings.maxSpawnDistance) + playerTransform.position.z);
+
+            if (spawnPosition.z > settings.maxSpawnZ)
+            {
+                skippedCount++;
+                continue;
+            }
+
             GameObject asteroid = GetNewAsteroid();
             asteroid.transform.position = spawnPosition;
             currentAsteroids.Add(asteroid);

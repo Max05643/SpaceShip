@@ -21,6 +21,12 @@ public class CameraController : MonoBehaviour
     }
     Sequence currentAnimation = null;
 
+
+    public void FreezeCameraPosition()
+    {
+        transform.SetParent(null);
+    }
+
     public void ApplyDamageAnimation()
     {
         PostProcessVolume m_Volume;

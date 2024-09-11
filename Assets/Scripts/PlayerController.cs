@@ -4,13 +4,24 @@ using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 using DG.Tweening;
 using Zenject;
+using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
+
+    enum GameOverType
+    {
+        Victory,
+        Health,
+        Barrier
+    }
+
     [System.Serializable]
     public class Settings
     {
         public float maxSpeed = 5, acceleration = 1, rotationSpeed = 0.5f, speedAfterTheCollision = 10;
         public int initialHealth = 100, damageFromAsteroid = 10;
+
+        public float distanceToWin = 2000;
 
         public bool displayCollectedCoins = true;
     }
@@ -40,12 +51,17 @@ public class PlayerController : MonoBehaviour
     [Inject]
     SoundController soundController;
 
+    [Inject]
+    PlanetController planetController;
+
     Rigidbody rigidbodyComponent;
 
     Quaternion currentRotation;
 
     int currentHealth = 0;
     int coinsCount = 0;
+
+    bool gameEnded = false;
 
     void Awake()
     {
@@ -56,11 +72,48 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        ProcessPhysics();
-        ProcessGrabInput();
-        ApplyFovEffect();
-        RepaintUI();
+        if (gameEnded)
+        {
+            ProcessExitInput();
+        }
+        else
+        {
+            ProcessPhysics();
+            ProcessGrabInput();
+            ApplyFovEffect();
+            RepaintUI();
+            CheckWinCondition();
+        }
+    }
 
+    void ProcessExitInput()
+    {
+        if (inputController.GetActionInput())
+        {
+            SceneManager.LoadScene(0);
+        }
+    }
+
+    void CheckWinCondition()
+    {
+        if (transform.position.z >= settings.distanceToWin)
+            EndGame(GameOverType.Victory);
+    }
+
+    readonly Dictionary<GameOverType, string> gameOverMessages = new Dictionary<GameOverType, string>
+    {
+        { GameOverType.Victory, "You Win!" },
+        { GameOverType.Health, "You lose after the fatal collision!" },
+        { GameOverType.Barrier, "You lose after crossing the simulation's broders!" }
+    };
+
+    void EndGame(GameOverType gameOverType)
+    {
+        gameEnded = true;
+        planetController.DisableMovement();
+        uiController.ShowGameOver(gameOverMessages[gameOverType]);
+        cameraController.FreezeCameraPosition();
+        rigidbodyComponent.velocity = gameOverType == GameOverType.Victory ? Vector3.forward * settings.maxSpeed : Vector3.zero;
     }
 
     void RepaintUI()
@@ -74,6 +127,13 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Asteroid"))
             ProcessAsteroidCollision();
+        else if (collision.gameObject.CompareTag("Barrier"))
+            ProcessBarrierCollision();
+    }
+
+    void ProcessBarrierCollision()
+    {
+        EndGame(GameOverType.Barrier);
     }
 
     void ProcessAsteroidCollision()
@@ -82,6 +142,9 @@ public class PlayerController : MonoBehaviour
         rigidbodyComponent.velocity = -Vector3.forward * settings.speedAfterTheCollision;
         cameraController.ApplyDamageAnimation();
         soundController.PlayClip(0);
+
+        if (currentHealth <= 0)
+            EndGame(GameOverType.Health);
     }
 
     void ProcessGrabInput()

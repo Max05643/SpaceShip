@@ -21,12 +21,25 @@ public class PlanetController : MonoBehaviour
     [Inject]
     Settings settings;
 
+
+    bool isMoving = true;
+
+    public void DisableMovement()
+    {
+        isMoving = false;
+    }
+
     void Start()
     {
         currentAnimation = transform.DORotate(Vector2.up * 180, settings.rotationTime).SetLoops(-1, LoopType.Incremental).SetEase(Ease.Linear);
     }
     void Update()
     {
+        if (!isMoving)
+        {
+            return;
+        }
+
         var progress = Mathf.InverseLerp(settings.minPlayersZPos, settings.maxPlayersZPos, playerTransform.position.z);
         progress = Mathf.Clamp01(progress);
 
