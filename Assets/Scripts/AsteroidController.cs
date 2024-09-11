@@ -2,9 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using Zenject;
 
 public class AsteroidController : MonoBehaviour
 {
+
+    public class Factory : PlaceholderFactory<AsteroidController>
+    {
+    }
+
     [SerializeField]
     GameObject[] possibleMeshes;
 

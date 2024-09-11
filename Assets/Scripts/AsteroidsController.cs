@@ -1,31 +1,43 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class AsteroidsController : MonoBehaviour
 {
-    [SerializeField]
-    GameObject asteroidPrefab;
+    [System.Serializable]
+
+    public class Settings
+    {
+        public bool enabled = true;
+
+        public float spawnNoise = 50, initialSpawnDistance = 50, minSpawnDistance = 300, maxSpawnDistance = 1000;
+
+        public int targetCount = 1000;
+    }
+
+    [Inject]
+    AsteroidController.Factory asteroidFactory;
 
     [SerializeField]
     Transform playerTransform;
-
-
-    [SerializeField]
-    float spawnNoise = 50, initialSpawnDistance = 50, minSpawnDistance = 300, maxSpawnDistance = 1000;
-
-    [SerializeField]
-    int targetCount = 1000;
-
-
 
     List<GameObject> currentAsteroids = new List<GameObject>();
     List<GameObject> unusedAsteroids = new List<GameObject>();
 
 
+    [Inject]
+    Settings settings;
+
     void Start()
     {
-        SpawnNewAsteroids(initialSpawnDistance);
+        if (!settings.enabled)
+        {
+            return;
+        }
+
+        SpawnNewAsteroids(settings.initialSpawnDistance);
         StartCoroutine(nameof(SpawnCycle));
     }
 
@@ -34,7 +46,7 @@ public class AsteroidsController : MonoBehaviour
         while (true)
         {
             RemoveOldAsteroids();
-            SpawnNewAsteroids(minSpawnDistance);
+            SpawnNewAsteroids(settings.minSpawnDistance);
             yield return new WaitForSeconds(2);
         }
     }
@@ -58,9 +70,9 @@ public class AsteroidsController : MonoBehaviour
 
     void SpawnNewAsteroids(float minSpawnDistance)
     {
-        while (currentAsteroids.Count < targetCount)
+        while (currentAsteroids.Count < settings.targetCount)
         {
-            Vector3 spawnPosition = new Vector3(Random.Range(-spawnNoise, spawnNoise), Random.Range(-spawnNoise, spawnNoise), Random.Range(minSpawnDistance, maxSpawnDistance) + playerTransform.position.z);
+            Vector3 spawnPosition = new Vector3(Random.Range(-settings.spawnNoise, settings.spawnNoise), Random.Range(-settings.spawnNoise, settings.spawnNoise), Random.Range(minSpawnDistance, settings.maxSpawnDistance) + playerTransform.position.z);
             GameObject asteroid = GetNewAsteroid();
             asteroid.transform.position = spawnPosition;
             currentAsteroids.Add(asteroid);
@@ -78,7 +90,9 @@ public class AsteroidsController : MonoBehaviour
         }
         else
         {
-            GameObject asteroid = Instantiate(asteroidPrefab, parent: transform);
+            var asteroidController = asteroidFactory.Create();
+            asteroidController.transform.SetParent(transform);
+            GameObject asteroid = asteroidController.gameObject;
             return asteroid;
         }
     }

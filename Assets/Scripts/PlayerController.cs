@@ -3,10 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 using DG.Tweening;
+using Zenject;
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField]
-    float maxSpeed = 5, acceleration = 1, rotationSpeed = 0.5f, speedAfterTheCollision = 10;
+    [System.Serializable]
+    public class Settings
+    {
+        public float maxSpeed = 5, acceleration = 1, rotationSpeed = 0.5f, speedAfterTheCollision = 10;
+    }
+
+    [Inject]
+    Settings settings;
 
     [SerializeField]
     Transform playerModelObject;
@@ -15,18 +22,14 @@ public class PlayerController : MonoBehaviour
     [Range(10, 90)]
     float maxRotationAngle = 80;
 
-    [SerializeField]
-    [Range(10, 90)]
-    float minFov, maxFov;
-
-    [SerializeField]
-    Camera mainCamera;
-
-    [SerializeField]
-    Transform cameraSystem;
-
-    [SerializeField]
+    [Inject]
     GoldDetector goldDetector;
+
+    [Inject]
+    CameraController cameraController;
+
+    [Inject]
+    InputController inputController;
 
     Rigidbody rigidbodyComponent;
 
@@ -39,55 +42,33 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        ProcessInput();
+        ProcessPhysics();
+        ProcessGrabInput();
         ApplyFovEffect();
     }
 
-
-    Sequence currentAnimation = null;
     void OnCollisionEnter(Collision collision)
     {
-        rigidbodyComponent.velocity = -Vector3.forward * speedAfterTheCollision;
-
-        PostProcessVolume m_Volume;
-        Vignette m_Vignette;
-        m_Vignette = ScriptableObject.CreateInstance<Vignette>();
-        m_Vignette.enabled.Override(true);
-        m_Vignette.intensity.Override(1f);
-        m_Vignette.smoothness.Override(1f);
-        m_Vignette.roundness.Override(1f);
-        m_Vignette.color.Override(Color.red);
-
-
-
-        m_Volume = PostProcessManager.instance.QuickVolume(6, 100f, m_Vignette);
-        m_Volume.weight = 0f;
-
-        currentAnimation?.Kill(true);
-
-        currentAnimation = DOTween.Sequence()
-           .Append(DOTween.To(() => m_Volume.weight, x => m_Volume.weight = x, 1f, 0.25f).From(0))
-           .AppendInterval(1f)
-           .Append(DOTween.To(() => m_Volume.weight, x => m_Volume.weight = x, 0f, 0.25f).From(1))
-           .OnComplete(() =>
-           {
-               RuntimeUtilities.DestroyVolume(m_Volume, true, true);
-           });
-
-        cameraSystem.DOKill(true);
-        cameraSystem.DOShakeRotation(0.5f, 10, 90, 90, true);
+        rigidbodyComponent.velocity = -Vector3.forward * settings.speedAfterTheCollision;
+        cameraController.ApplyDamageAnimation();
     }
 
-    void ProcessInput()
+    void ProcessGrabInput()
+    {
+        if (inputController.GetActionInput())
+        {
+            goldDetector.GrabNearestGold();
+        }
+    }
+
+    void ProcessPhysics()
     {
         var deltaTime = Time.fixedDeltaTime;
 
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = -Input.GetAxis("Vertical");
+        var directionInput = inputController.GetDirectionInput();
 
-        var targetRotation = Quaternion.Euler(vertical * maxRotationAngle, horizontal * maxRotationAngle, 0);
-        currentRotation = Quaternion.RotateTowards(currentRotation, targetRotation, rotationSpeed * deltaTime);
-
+        var targetRotation = Quaternion.Euler(directionInput.y * maxRotationAngle, directionInput.x * maxRotationAngle, 0);
+        currentRotation = Quaternion.RotateTowards(currentRotation, targetRotation, settings.rotationSpeed * deltaTime);
 
 
         playerModelObject.rotation = Quaternion.Euler(currentRotation.eulerAngles.x, 0, -currentRotation.eulerAngles.y);
@@ -95,21 +76,14 @@ public class PlayerController : MonoBehaviour
         var targetDirection = currentRotation * Vector3.forward;
 
 
-
-        rigidbodyComponent.velocity = Vector3.MoveTowards(rigidbodyComponent.velocity, targetDirection * maxSpeed, deltaTime * acceleration);
-
-
-        if (Input.GetKey(KeyCode.Space))
-        {
-            goldDetector.GrabNearestGold();
-        }
+        rigidbodyComponent.velocity = Vector3.MoveTowards(rigidbodyComponent.velocity, targetDirection * settings.maxSpeed, deltaTime * settings.acceleration);
     }
 
     void ApplyFovEffect()
     {
         var velocity = rigidbodyComponent.velocity.z;
-        var t = Mathf.Clamp01(Mathf.InverseLerp(0, maxSpeed, velocity));
-        mainCamera.fieldOfView = Mathf.Lerp(minFov, maxFov, t);
+        var t = Mathf.Clamp01(Mathf.InverseLerp(0, settings.maxSpeed, velocity));
+        cameraController.ApplyFovEffect(t);
     }
 
 }

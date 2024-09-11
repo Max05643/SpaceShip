@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Zenject;
 
 public class GoldDetector : MonoBehaviour
 {
@@ -9,34 +10,28 @@ public class GoldDetector : MonoBehaviour
     float detectionRadius = 1f;
 
     [SerializeField]
+    float tolerationDistance = 10;
+
+    [Inject]
     PipeController pipeController;
+
+    [Inject]
+    GoldSpawnController goldSpawnController;
 
     [SerializeField]
     Transform player;
 
 
-    List<GameObject> golds = new List<GameObject>();
-
-    void Start()
-    {
-        GetComponent<SphereCollider>().radius = detectionRadius;
-    }
+    GameObject targetGold = null;
 
     public void GrabNearestGold()
     {
-        if (golds.Count == 0 || pipeController.IsAnimating)
+        if (targetGold == null)
         {
             return;
         }
 
-        var playerPos = player.position;
-
-        GameObject nearestGold = golds.Where(g => g.transform.position.z > player.position.z).OrderBy(g => Vector3.Distance(playerPos, g.transform.position)).First();
-
-
-        golds.Remove(nearestGold);
-        UpdateDetected();
-
+        GameObject nearestGold = targetGold;
 
         nearestGold.GetComponent<GoldController>().StartGrabbing();
 
@@ -46,39 +41,32 @@ public class GoldDetector : MonoBehaviour
         });
     }
 
-    void OnTriggerEnter(Collider other)
+    IEnumerable<GameObject> GetPossibleGolds()
     {
-        if (other.gameObject.CompareTag("Gold"))
-        {
-            golds.Add(other.gameObject);
-            UpdateDetected();
-        }
+        return goldSpawnController.CurrentGolds.
+        Where(
+            g => Vector3.Distance(player.position, g.transform.position) < detectionRadius
+            && g.transform.position.z > player.position.z + tolerationDistance
+            && !g.GetComponent<GoldController>().IsBeingGrabbed
+            );
     }
 
-    void OnTriggerExit(Collider other)
+    void Update()
     {
-        if (other.gameObject.CompareTag("Gold"))
-        {
-            golds.Remove(other.gameObject);
-            UpdateDetected();
-        }
+        UpdateDetected();
     }
 
     void UpdateDetected()
     {
-        var detectedOne = golds.Where(g => g.transform.position.z > player.position.z).OrderBy(g => Vector3.Distance(transform.position, g.transform.position)).FirstOrDefault();
-        var canAnytingBeDetected = !pipeController.IsAnimating;
+        targetGold?.GetComponent<GoldController>().StopDetecting();
+        targetGold = null;
 
-        foreach (var gold in golds)
+        var gold = GetPossibleGolds().OrderBy(g => Vector3.Distance(g.transform.position, player.transform.position)).FirstOrDefault();
+
+        if (gold != null)
         {
-            if (gold == detectedOne && canAnytingBeDetected)
-            {
-                gold.GetComponent<GoldController>().StartDetecting();
-            }
-            else
-            {
-                gold.GetComponent<GoldController>().StopDetecting();
-            }
+            targetGold = gold;
+            targetGold.GetComponent<GoldController>().StartDetecting();
         }
     }
 

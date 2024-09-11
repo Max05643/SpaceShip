@@ -2,13 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using Zenject;
 
 public class GoldController : MonoBehaviour
 {
+
+    public class Factory : PlaceholderFactory<GoldController>
+    {
+    }
+
     [SerializeField]
     GameObject circle;
 
-    public GoldSpawnController goldSpawnController;
+    [Inject]
+    GoldSpawnController goldSpawnController;
 
     Tween currentAnimation = null;
 

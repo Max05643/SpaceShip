@@ -1,32 +1,44 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using UnityEngine;
+using Zenject;
 
 public class GoldSpawnController : MonoBehaviour
 {
 
-    [SerializeField]
-    GameObject goldPrefab;
+    [System.Serializable]
+    public class Settings
+    {
+        public bool enabled = true;
+        public float spawnNoise = 50, initialSpawnDistance = 50, minSpawnDistance = 300, maxSpawnDistance = 1000;
+        public int targetCount = 1000;
+
+    }
+
+    [Inject]
+    GoldController.Factory goldFactory;
 
     [SerializeField]
     Transform playerTransform;
 
-
-    [SerializeField]
-    float spawnNoise = 50, initialSpawnDistance = 50, minSpawnDistance = 300, maxSpawnDistance = 1000;
-
-    [SerializeField]
-    int targetCount = 1000;
-
-
+    public IEnumerable<GameObject> CurrentGolds => currentgolds;
 
     List<GameObject> currentgolds = new List<GameObject>();
     List<GameObject> unusedgolds = new List<GameObject>();
 
+    [Inject]
+    Settings settings;
+
 
     void Start()
     {
-        SpawnNewGolds(initialSpawnDistance);
+        if (!settings.enabled)
+        {
+            return;
+        }
+
+        SpawnNewGolds(settings.initialSpawnDistance);
         StartCoroutine(nameof(SpawnCycle));
     }
 
@@ -35,7 +47,7 @@ public class GoldSpawnController : MonoBehaviour
         while (true)
         {
             RemoveOldGolds();
-            SpawnNewGolds(minSpawnDistance);
+            SpawnNewGolds(settings.minSpawnDistance);
             yield return new WaitForSeconds(2);
         }
     }
@@ -64,9 +76,9 @@ public class GoldSpawnController : MonoBehaviour
 
     void SpawnNewGolds(float minSpawnDistance)
     {
-        while (currentgolds.Count < targetCount)
+        while (currentgolds.Count < settings.targetCount)
         {
-            Vector3 spawnPosition = new Vector3(Random.Range(-spawnNoise, spawnNoise), Random.Range(-spawnNoise, spawnNoise), Random.Range(minSpawnDistance, maxSpawnDistance) + playerTransform.position.z);
+            Vector3 spawnPosition = new Vector3(Random.Range(-settings.spawnNoise, settings.spawnNoise), Random.Range(-settings.spawnNoise, settings.spawnNoise), Random.Range(minSpawnDistance, settings.maxSpawnDistance) + playerTransform.position.z);
             GameObject gold = GetNewGold();
             gold.transform.position = spawnPosition;
             currentgolds.Add(gold);
@@ -84,8 +96,9 @@ public class GoldSpawnController : MonoBehaviour
         }
         else
         {
-            GameObject gold = Instantiate(goldPrefab, parent: transform);
-            gold.GetComponent<GoldController>().goldSpawnController = this;
+            var coldController = goldFactory.Create();
+            coldController.transform.SetParent(transform);
+            GameObject gold = coldController.gameObject;
             return gold;
         }
     }
