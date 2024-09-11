@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2070786837970464067}
   m_Layer: 10
   m_Name: Gold
-  m_TagString: Untagged
+  m_TagString: Gold
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -69,6 +69,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   circle: {fileID: 2315200424852680755}
+  goldSpawnController: {fileID: 0}
 --- !u!1 &5909480725555809454
 GameObject:
   m_ObjectHideFlags: 0

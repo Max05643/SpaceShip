@@ -53,6 +53,11 @@ public class GoldSpawnController : MonoBehaviour
 
         foreach (GameObject gold in objsToRemove)
         {
+            if (gold.GetComponent<GoldController>().IsBeingGrabbed)
+            {
+                continue;
+            }
+
             RemoveGold(gold);
         }
     }
@@ -80,11 +85,12 @@ public class GoldSpawnController : MonoBehaviour
         else
         {
             GameObject gold = Instantiate(goldPrefab, parent: transform);
+            gold.GetComponent<GoldController>().goldSpawnController = this;
             return gold;
         }
     }
 
-    void RemoveGold(GameObject gold)
+    public void RemoveGold(GameObject gold)
     {
         currentgolds.Remove(gold);
         gold.SetActive(false);

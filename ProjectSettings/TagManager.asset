@@ -7,6 +7,7 @@ TagManager:
   - Enemy
   - TrackingObject
   - Actors
+  - Gold
   layers:
   - Default
   - TransparentFX
@@ -19,7 +20,7 @@ TagManager:
   - Border
   - Asteroid
   - Gold
-  - 
+  - Detector
   - 
   - 
   - 

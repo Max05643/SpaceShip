@@ -25,6 +25,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     Transform cameraSystem;
 
+    [SerializeField]
+    GoldDetector goldDetector;
+
     Rigidbody rigidbodyComponent;
 
     Quaternion currentRotation;
@@ -94,6 +97,12 @@ public class PlayerController : MonoBehaviour
 
 
         rigidbodyComponent.velocity = Vector3.MoveTowards(rigidbodyComponent.velocity, targetDirection * maxSpeed, deltaTime * acceleration);
+
+
+        if (Input.GetKey(KeyCode.Space))
+        {
+            goldDetector.GrabNearestGold();
+        }
     }
 
     void ApplyFovEffect()
