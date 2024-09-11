@@ -10,8 +10,13 @@ public class UIController : MonoBehaviour
     Image leftHealth, rightHealth, leftSpeed, rightSpeed;
 
     [SerializeField]
-    TextMeshProUGUI healthText;
+    TextMeshProUGUI healthText, coinsText;
 
+
+    public void DisplayCoinsCount(int? coinsCount)
+    {
+        coinsText.text = coinsCount.HasValue ? coinsCount.ToString() : string.Empty;
+    }
 
     public void UpdateHealth(float valueNormalized)
     {

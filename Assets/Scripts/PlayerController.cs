@@ -11,6 +11,8 @@ public class PlayerController : MonoBehaviour
     {
         public float maxSpeed = 5, acceleration = 1, rotationSpeed = 0.5f, speedAfterTheCollision = 10;
         public int initialHealth = 100, damageFromAsteroid = 10;
+
+        public bool displayCollectedCoins = true;
     }
 
     [Inject]
@@ -43,11 +45,13 @@ public class PlayerController : MonoBehaviour
     Quaternion currentRotation;
 
     int currentHealth = 0;
+    int coinsCount = 0;
 
     void Awake()
     {
         currentHealth = settings.initialHealth;
         rigidbodyComponent = GetComponent<Rigidbody>();
+        uiController.DisplayCoinsCount(null);
     }
 
     void FixedUpdate()
@@ -84,8 +88,17 @@ public class PlayerController : MonoBehaviour
     {
         if (inputController.GetActionInput())
         {
-            goldDetector.GrabNearestGold();
+            goldDetector.GrabNearestGold(OnGrabbedCoint);
         }
+    }
+
+
+    void OnGrabbedCoint()
+    {
+        soundController.PlayClip(1);
+        coinsCount++;
+        if (settings.displayCollectedCoins)
+            uiController.DisplayCoinsCount(coinsCount);
     }
 
     void ProcessPhysics()

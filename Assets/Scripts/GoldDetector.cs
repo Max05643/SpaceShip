@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,13 +22,9 @@ public class GoldDetector : MonoBehaviour
     [SerializeField]
     Transform player;
 
-    [Inject]
-    SoundController soundController;
-
-
     GameObject targetGold = null;
 
-    public void GrabNearestGold()
+    public void GrabNearestGold(Action onSuccessfulGrab)
     {
         if (targetGold == null || pipeController.IsAnimating)
         {
@@ -41,7 +38,7 @@ public class GoldDetector : MonoBehaviour
         pipeController.GrabItem(nearestGold, () =>
         {
             nearestGold.GetComponent<GoldController>().FinishGrabbing();
-            soundController.PlayClip(1);
+            onSuccessfulGrab.Invoke();
         });
     }
 
