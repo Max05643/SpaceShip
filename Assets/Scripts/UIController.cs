@@ -14,13 +14,18 @@ public class UIController : MonoBehaviour
     TextMeshProUGUI healthText, coinsText, endGameText;
 
     [SerializeField]
-    CanvasGroup mainUI, endGameUI;
+    CanvasGroup mainUI, endGameUI, tutorialUI;
 
     Sequence currentAnimation = null;
     void Start()
     {
         currentAnimation = DOTween.Sequence();
         currentAnimation.Append(mainUI.DOFade(1, 1).SetDelay(0.5f));
+    }
+
+    public void HideTutorial()
+    {
+        tutorialUI.DOFade(0, 0.5f);
     }
 
     public void DisplayCoinsCount(int? coinsCount)

@@ -15,6 +15,13 @@ public class PlayerController : MonoBehaviour
         Barrier
     }
 
+    enum GameState
+    {
+        NotStarted,
+        Playing,
+        GameOver
+    }
+
     [System.Serializable]
     public class Settings
     {
@@ -61,7 +68,7 @@ public class PlayerController : MonoBehaviour
     int currentHealth = 0;
     int coinsCount = 0;
 
-    bool gameEnded = false;
+    GameState gameState = GameState.NotStarted;
 
     void Awake()
     {
@@ -72,17 +79,30 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (gameEnded)
+        switch (gameState)
         {
-            ProcessExitInput();
+            case GameState.NotStarted:
+                ProcessStartInput();
+                break;
+            case GameState.Playing:
+                ProcessPhysics();
+                ProcessGrabInput();
+                ApplyFovEffect();
+                RepaintUI();
+                CheckWinCondition();
+                break;
+            case GameState.GameOver:
+                ProcessExitInput();
+                break;
         }
-        else
+    }
+
+    void ProcessStartInput()
+    {
+        if (inputController.GetActionInput())
         {
-            ProcessPhysics();
-            ProcessGrabInput();
-            ApplyFovEffect();
-            RepaintUI();
-            CheckWinCondition();
+            gameState = GameState.Playing;
+            uiController.HideTutorial();
         }
     }
 
@@ -109,7 +129,7 @@ public class PlayerController : MonoBehaviour
 
     void EndGame(GameOverType gameOverType)
     {
-        gameEnded = true;
+        gameState = GameState.GameOver;
         planetController.DisableMovement();
         uiController.ShowGameOver(gameOverMessages[gameOverType]);
         cameraController.FreezeCameraPosition();
