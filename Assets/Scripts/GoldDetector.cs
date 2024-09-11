@@ -29,7 +29,7 @@ public class GoldDetector : MonoBehaviour
 
     public void GrabNearestGold()
     {
-        if (targetGold == null)
+        if (targetGold == null || pipeController.IsAnimating)
         {
             return;
         }
