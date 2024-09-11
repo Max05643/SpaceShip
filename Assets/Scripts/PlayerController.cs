@@ -35,6 +35,9 @@ public class PlayerController : MonoBehaviour
     [Inject]
     UIController uiController;
 
+    [Inject]
+    SoundController soundController;
+
     Rigidbody rigidbodyComponent;
 
     Quaternion currentRotation;
@@ -74,6 +77,7 @@ public class PlayerController : MonoBehaviour
         currentHealth -= settings.damageFromAsteroid;
         rigidbodyComponent.velocity = -Vector3.forward * settings.speedAfterTheCollision;
         cameraController.ApplyDamageAnimation();
+        soundController.PlayClip(0);
     }
 
     void ProcessGrabInput()
