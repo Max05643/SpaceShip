@@ -11,7 +11,7 @@ public class GoldSpawnController : MonoBehaviour
     public class Settings
     {
         public bool enabled = true;
-        public float spawnNoise = 50, initialSpawnDistance = 50, minSpawnDistance = 300, maxSpawnDistance = 1000;
+        public float spawnNoise = 50, initialSpawnDistance = 50, minSpawnDistance = 300, maxSpawnDistance = 1000, maxSpawnZ = 1900;
         public int targetCount = 1000;
 
     }
@@ -76,9 +76,18 @@ public class GoldSpawnController : MonoBehaviour
 
     void SpawnNewGolds(float minSpawnDistance)
     {
-        while (currentgolds.Count < settings.targetCount)
+        int skippedCount = 0;
+
+        while (currentgolds.Count + skippedCount < settings.targetCount)
         {
             Vector3 spawnPosition = new Vector3(Random.Range(-settings.spawnNoise, settings.spawnNoise), Random.Range(-settings.spawnNoise, settings.spawnNoise), Random.Range(minSpawnDistance, settings.maxSpawnDistance) + playerTransform.position.z);
+
+            if (spawnPosition.z > settings.maxSpawnZ)
+            {
+                skippedCount++;
+                continue;
+            }
+
             GameObject gold = GetNewGold();
             gold.transform.position = spawnPosition;
             currentgolds.Add(gold);

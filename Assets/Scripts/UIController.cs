@@ -55,4 +55,9 @@ public class UIController : MonoBehaviour
 
         endGameText.text = message;
     }
+
+    void OnDestroy()
+    {
+        currentAnimation?.Kill();
+    }
 }

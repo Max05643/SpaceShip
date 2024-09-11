@@ -61,6 +61,9 @@ public class PlayerController : MonoBehaviour
     [Inject]
     PlanetController planetController;
 
+    [Inject]
+    ZenjectSceneLoader zenjectSceneLoader;
+
     Rigidbody rigidbodyComponent;
 
     Quaternion currentRotation;
@@ -69,6 +72,11 @@ public class PlayerController : MonoBehaviour
     int coinsCount = 0;
 
     GameState gameState = GameState.NotStarted;
+
+    GameOverType? gameOverType = null;
+
+    [InjectOptional(Id = "GameLevelIndex")]
+    int? levelIndex = null;
 
     void Awake()
     {
@@ -110,7 +118,18 @@ public class PlayerController : MonoBehaviour
     {
         if (inputController.GetActionInput())
         {
-            SceneManager.LoadScene(0);
+            if (levelIndex == null)
+            {
+                levelIndex = 0;
+            }
+
+            int newLevel = gameOverType == GameOverType.Victory ? (1 - levelIndex.Value) : levelIndex.Value;
+
+            zenjectSceneLoader.LoadScene(0, LoadSceneMode.Single, (container) =>
+            {
+                container.BindInstance(newLevel).WithId("GameLevelIndex").WhenInjectedInto<SettingsInstaller>();
+                container.BindInstance(newLevel).WithId("GameLevelIndex").WhenInjectedInto<PlayerController>();
+            });
         }
     }
 
@@ -127,11 +146,12 @@ public class PlayerController : MonoBehaviour
         { GameOverType.Barrier, "You lose after crossing the simulation's broders!" }
     };
 
-    void EndGame(GameOverType gameOverType)
+    void EndGame(GameOverType settedGameOverType)
     {
+        gameOverType = settedGameOverType;
         gameState = GameState.GameOver;
         planetController.DisableMovement();
-        uiController.ShowGameOver(gameOverMessages[gameOverType]);
+        uiController.ShowGameOver(gameOverMessages[settedGameOverType]);
         cameraController.FreezeCameraPosition();
         rigidbodyComponent.velocity = gameOverType == GameOverType.Victory ? Vector3.forward * settings.maxSpeed : Vector3.zero;
     }
